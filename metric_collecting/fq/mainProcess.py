@@ -33,9 +33,13 @@ conn = pymysql.connect(host=cf.get("DB","host"),
 
 def addSonarResult(issueNum,metrics,projId,repoName):
     with conn.cursor() as cur:
+        print "repoName: " + repoName
+        print "loc: " + repr(metrics["loc"])
+        print "issue_num: " + repr(issueNum)
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        sql = "insert into sonar_repo_issues_num (`proj_id`, `issue_num`, `repo_name`, `create_time`, loc) values (%s,%s,'%s','%s',%s)" \
+        sql = "insert into sonar_repo_issues_num (`proj_id`, `issue_num`, `repo_name`, `create_time`, `loc`) values (%s,%s,'%s','%s',%s)" \
               % (projId,issueNum,repoName,dt,metrics["loc"])
+        print sql
         cur.execute(sql)
         conn.commit()
 
@@ -52,7 +56,6 @@ def start():
 
         sonarScan.runSonarScanner(targetPath)
 
-        os.system('rmdir /S /Q "{}"'.format(targetPath))
         addSonarResult(sonarResultAnalysis.getIssueNumberOfRepo(repoName),
                        sonarResultAnalysis.getMetricsOfRepo(repoName),
                        projId,
