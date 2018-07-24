@@ -6,7 +6,7 @@ import xlrd
 import logging
 import datetime
 import time
-from email_monitor import email
+from email_monitor import emailer
 
 logging.basicConfig(level=logging.DEBUG,
                 format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
@@ -21,10 +21,15 @@ formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 
-dbname='lyz'
+# dbname='lyz'
+# user='root'
+# passwd='111111'
+# host = '10.107.10.110'
+
+dbname='ossean_coin_rank'
 user='root'
-passwd='111111'
-host = '10.107.10.110'
+passwd='password'
+host = 'localhost'
 
 conn =  pymysql.connect(host=host, port=3306, user=user, passwd=passwd, db=dbname,charset='utf8')
 conn.autocommit(1)
@@ -75,45 +80,39 @@ def get_twitterdata(coin_url):
             followers_num = 0
     except:
         logging.info("网络异常，连接不上")
-        email.email("爬取twitter网络异常")
+        emailer.email("爬取twitter网络异常")
 
     return tweets_num, following_num, followers_num
 
-# 读取项目列表
-def read_coinProjectList():
-    excelData = xlrd.open_workbook(u'bitinfo.xlsx')
-    sheet0 = excelData.sheet_by_index(0)
-    coinUrlList = sheet0.col_values(9)
-    del coinUrlList[0]
-    coinIdList = sheet0.col_values(0)
-    del coinIdList[0]
-    coinNameList = sheet0.col_values(1)
-    del coinNameList[0]
-    return coinIdList, coinNameList, coinUrlList
 
 # 开始爬取
 def start():
-    coinIdList, coinNameList, coinUrlList = read_coinProjectList()
-    coin_list_len = coinIdList.__len__()
     re_extract_url_list = []
     re_extract_id_list = []
     re_extract_name_list = []
-    for i in range(coin_list_len):
-        tweets_num, following_num, followers_num = get_twitterdata(coinUrlList[i])
+
+    select_sql = "select prj_id, name, twitter_url from prj_list"
+    cur.execute(select_sql)
+    cur_result = cur.fetchall()
+    for result in cur_result:
+
+        tweets_num, following_num, followers_num = get_twitterdata(result[2])
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         if tweets_num == "EOF":
-            re_extract_id_list.append(coinIdList[i])
-            re_extract_url_list.append(coinUrlList[i])
-            re_extract_name_list.append(coinNameList[i])
+            re_extract_id_list.append(result[0])
+            re_extract_name_list.append(result[1])
+            re_extract_url_list.append(result[2])
+
             continue
         if tweets_num == "wr_url":
             cur.execute(
-                insertSql % (int(coinIdList[i]), str(coinNameList[i]), 0, 0, 0, dt))
+                insertSql % (int(result[0]), str(result[1]), 0, 0, 0, dt))
             continue
-        logging.info(str(int(coinIdList[i])) + "  " + str(coinNameList[i]) + "  " + str(tweets_num) + "  "  + str(following_num) + "  "  + str(followers_num))
+        logging.info(str(int(result[0])) + "  " + str(result[1]) + "  " + str(tweets_num) + "  " + str(
+            following_num) + "  " + str(followers_num))
         cur.execute(
-            insertSql % (int(coinIdList[i]), str(coinNameList[i]), tweets_num, following_num, followers_num, dt))
-    # 重新爬取一次
+            insertSql % (int(result[0]), str(result[1]), tweets_num, following_num, followers_num, dt))
+
     if re_extract_url_list.__len__() > 0:
         time.sleep(10)
         if(re_extract(re_extract_id_list, re_extract_name_list, re_extract_url_list)):
