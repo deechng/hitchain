@@ -5,16 +5,17 @@ import ConfigParser
 cf = ConfigParser.ConfigParser()
 cf.read("config.conf")
 root_url = "http://localhost:"+cf.get("sonar","sonar_port")+"/api"
-issue_url = root_url + "/issues/search?severities=CRITICAL%2CMAJOR&"
-metrics_url = root_url + "component?"
+issue_url = root_url + "/issues/search?componentKeys="
+issue_url_filter = "&severities=CRITICAL%2CMAJOR"
+metrics_url = root_url + "/measures/component?"
 
 
 
 def getMetric(repoName,metricKeys):
-    params = {"component":repoName}
+    params = {"component":repoName,"metricKeys":metricKeys}
     r = requests.get(metrics_url,params=params).json()
     try:
-        return r["component"]["measures"]["value"]
+        return r["component"]["measures"][0]["value"]
     except:
         print ('No result')
 
@@ -25,8 +26,8 @@ def getMetricsOfRepo(repoName):
 
 def getIssueResult(repoName):
 
-    params = {"componentKeys":repoName}
-    r = requests.get(issue_url, params = params)
+    # params = {"project":repoName}
+    r = requests.get(issue_url+repoName+issue_url_filter)
     if not r.json():
         print("")
     else:
@@ -43,6 +44,13 @@ def getIssueNumbers(json_result,repoName):
         if not json_result['issues']:
             print('')
         else:
+            # count = 0
+            # if json_result["issues"]:
+            #     for issue in json_result["issues"]:
+            #         if issue["project"] == repoName and issue["severity"] in ["CRITICAL","MAJOR","BLOCKER"]:
+            #             count += 1
+            #
+            # return count
             return json_result["total"]
 
     # for eachFileIssue in issues:
@@ -58,4 +66,5 @@ def getIssueNumberOfRepo(repoName):
 # print getIssueNumbers(getIssueResult("bitcoin"),"bitcoin")
 
 # print  getIssueNumberOfRepo("bitcoin")
-
+#
+# print getMetricsOfRepo("bitcoin")
