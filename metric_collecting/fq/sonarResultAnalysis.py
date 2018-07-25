@@ -6,7 +6,8 @@ cf = ConfigParser.ConfigParser()
 cf.read("config.conf")
 root_url = "http://localhost:"+cf.get("sonar","sonar_port")+"/api"
 issue_url = root_url + "/issues/search?componentKeys="
-issue_url_filter = "&severities=CRITICAL%2CMAJOR"
+# issue_url_filter = "&severities=CRITICAL%2CMAJOR"
+issue_url_filter = "&resolved=false&severities="
 metrics_url = root_url + "/measures/component?"
 
 
@@ -24,10 +25,10 @@ def getMetricsOfRepo(repoName):
     return {"loc":loc}
 
 
-def getIssueResult(repoName):
+def getIssueResult(repoName,type):
 
     # params = {"project":repoName}
-    r = requests.get(issue_url+repoName+issue_url_filter)
+    r = requests.get(issue_url+repoName+issue_url_filter+type)
     if not r.json():
         print("")
     else:
@@ -60,11 +61,11 @@ def getIssueNumbers(json_result,repoName):
     #             count += 1
     # return count
 
-def getIssueNumberOfRepo(repoName):
-    return getIssueNumbers(getIssueResult(repoName),repoName)
+def getIssueNumberOfRepo(repoName,tpye):
+    return getIssueNumbers(getIssueResult(repoName,tpye),repoName)
 
 # print getIssueNumbers(getIssueResult("bitcoin"),"bitcoin")
 
-# print  getIssueNumberOfRepo("bitcoin")
+print  getIssueNumberOfRepo("bitcoin","MAJOR")
 #
 # print getMetricsOfRepo("bitcoin")
