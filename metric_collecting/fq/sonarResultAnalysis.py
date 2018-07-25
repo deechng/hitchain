@@ -13,7 +13,7 @@ metrics_url = root_url + "/measures/component?"
 
 
 def getMetric(repoName,metricKeys):
-    params = {"component":repoName,"ge":metricKeys}
+    params = {"component":repoName,"metricKeys":metricKeys}
     r = requests.get(metrics_url,params=params).json()
     try:
         return r["component"]["measures"][0]["value"]
