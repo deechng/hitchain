@@ -44,7 +44,7 @@ def addSonarResult(issueNum,metrics,projId,repoName):
         conn.commit()
 
 def start():
-    pull.PullProcess()
+    # pull.PullProcess()
     sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
     targetPathBase = os.getcwd() + "/" + cf.get("server", "sonarTempAddr")
     for repo in pull.getCloneRepos():
