@@ -426,7 +426,6 @@ def computeTrend():
 
 def computeScore():
 	M1,M2,M3,M4,M5,M6 = {},{},{},{},{},{}
-	score = []
 	dateTime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
 	for repo in REPOS:
 		M1[repo] = _my_avg(dbop.select_one("select inf_dev,inf_social from inf where repo_id=%s and computed_at<=%s order by id limit 1",
@@ -441,11 +440,13 @@ def computeScore():
 						(repo,dateTime),(0,)))
 		M6[repo] = _my_avg(dbop.select_one("select  dit,tit,dcpt,ucpt from trend where repo_id=%s and computed_at<=%s order by id limit 1",
 						(repo,dateTime),(0,0)))
-		score.append((repo,_my_avg([M1[repo],M2[repo],M3[repo],M4[repo],M5[repo],M6[repo]])))
-
-	score = sorted(score, key=lambda x: x[1],reverse=True)
 
 	M1,M2,M3,M4,M5,M6 = _nor_dict(M1),_nor_dict(M2),_nor_dict(M3),_nor_dict(M4),_nor_dict(M5),_nor_dict(M6)
+	score = []
+	for repo in REPOS:
+		score.append((repo,_my_avg([M1[repo],M2[repo],M3[repo],M4[repo],M5[repo],M6[repo]])))
+	score = sorted(score, key=lambda x: x[1],reverse=True)
+
 	field_sql_str = "prj_id,rank,score,m1_inf,m2_maturity,m3_quality,m4_team_healty,m5_activatin,m6_trend"
 	for i in range(0,len(score)):
 		repo,r_score = score[i]
