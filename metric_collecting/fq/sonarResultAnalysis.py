@@ -66,6 +66,6 @@ def getIssueNumberOfRepo(repoName,tpye):
 
 # print getIssueNumbers(getIssueResult("bitcoin"),"bitcoin")
 
-print  getIssueNumberOfRepo("bitcoin","MAJOR")
+# print  getIssueNumberOfRepo("bitcoin","MAJOR")
 #
 # print getMetricsOfRepo("bitcoin")
