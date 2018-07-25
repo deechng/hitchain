@@ -50,7 +50,7 @@ def _my_avg(data):
 	data_del_none = [item for item in data if item is not None]
 	if len(data_del_none) == 0:
 		return None
-	return sum(data_del_none)/len(data_del_none)
+	return sum(data_del_none)/len(data)
 
 def _nor_data(dataSet):
 	dataSetValid = [item for item in dataSet if item is not None]
