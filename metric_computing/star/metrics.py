@@ -427,8 +427,8 @@ def computeScore():
 						(repo,dateTime),(0,0)))
 		M4[repo] = _my_avg(dbop.select_one("select  ccr,ngr,tbr from team_health where repo_id=%s and computed_at<=%s order by id limit 1",
 						(repo,dateTime),(0,0)))
-		M5[repo] = _my_avg(dbop.select_one("select  dev,rel from dev_actv where repo_id=%s and computed_at<=%s order by id limit 1",
-						(repo,dateTime),(0,0)))
+		M5[repo] = _my_avg(dbop.select_one("select  dev from dev_actv where repo_id=%s and computed_at<=%s order by id limit 1",
+						(repo,dateTime),(0,)))
 		M6[repo] = _my_avg(dbop.select_one("select  dit,tit,dcpt,ucpt from trend where repo_id=%s and computed_at<=%s order by id limit 1",
 						(repo,dateTime),(0,0)))
 		score.append((repo,_my_avg([M1[repo],M2[repo],M3[repo],M4[repo],M5[repo],M6[repo]])))
