@@ -88,6 +88,18 @@ def scannerOneRepo(repoName):
 
     shutil.rmtree(targetPath)
 
+def scannerRepoList(repoNameList):
+    sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
+    targetPathBase = os.getcwd() + "/" + cf.get("server", "sonarTempAddr")
+    for repoName in repoNameList:
+        sourcePath = sourcePathBase + "/" + repoName
+        targetPath = targetPathBase + "/" + repoName
+        helper.mkdir(targetPath)
+        helper.copyFiles(sourcePath, targetPath)
+
+        sonarScan.runSonarScanner(targetPath)
+
+        shutil.rmtree(targetPath)
 
 if __name__ == "__main__":
     start()
