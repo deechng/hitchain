@@ -69,7 +69,7 @@ def start():
 
         shutil.rmtree(targetPath)
 
-        addSonarResult(sonarResultAnalysis.getIssueNumberOfRepo(repoName),
+        addSonarResult(sonarResultAnalysis.getAllIssueNumberOfRepo(repoName),
                        sonarResultAnalysis.getMetricsOfRepo(repoName),
                        projId,
                        repoName)

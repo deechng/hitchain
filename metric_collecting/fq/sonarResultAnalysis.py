@@ -64,7 +64,17 @@ def getIssueNumbers(json_result,repoName):
 def getIssueNumberOfRepo(repoName,tpye):
     return getIssueNumbers(getIssueResult(repoName,tpye),repoName)
 
-# print getIssueNumbers(getIssueResult("bitcoin"),"bitcoin")
+def getAllIssueNumberOfRepo(repoName):
+    return {
+        "major":getIssueNumberOfRepo(repoName,"MAJOR"),
+        "blocker":getIssueNumberOfRepo(repoName,"BLOCKER"),
+        "critical":getIssueNumberOfRepo(repoName,"CRITICAL"),
+        "minor":getIssueNumberOfRepo(repoName,"MINOR"),
+        "info":getIssueNumberOfRepo(repoName,"INFO")
+    }
+
+
+        # print getIssueNumbers(getIssueResult("bitcoin"),"bitcoin")
 
 # print  getIssueNumberOfRepo("bitcoin","MAJOR")
 #
