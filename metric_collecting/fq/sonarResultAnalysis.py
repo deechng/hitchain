@@ -1,6 +1,7 @@
 import json
 import requests
 import ConfigParser
+import time
 
 cf = ConfigParser.ConfigParser()
 cf.read("config.conf")
@@ -14,7 +15,15 @@ metrics_url = root_url + "/measures/component?"
 
 def getMetric(repoName,metricKeys):
     params = {"component":repoName,"metricKeys":metricKeys}
-    r = requests.get(metrics_url,params=params).json()
+    r = ""
+    while r == "":
+        try:
+            r = requests.get(metrics_url,params=params).json()
+            break
+        except requests.exceptions.ConnectionError:
+            time.sleep(5)
+            continue
+
     try:
         return r["component"]["measures"][0]["value"]
     except:
@@ -28,7 +37,15 @@ def getMetricsOfRepo(repoName):
 def getIssueResult(repoName,type):
 
     # params = {"project":repoName}
-    r = requests.get(issue_url+repoName+issue_url_filter+type)
+    r = ""
+    while r == "":
+        try:
+            r = requests.get(issue_url+repoName+issue_url_filter+type)
+            break
+        except requests.exceptions.ConnectionError:
+            time.sleep(5)
+            continue
+
     if not r.json():
         print("")
     else:
