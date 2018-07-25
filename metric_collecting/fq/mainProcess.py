@@ -56,10 +56,10 @@ def start():
 
         sonarScan.runSonarScanner(targetPath)
 
-        addSonarResult(sonarResultAnalysis.getIssueNumberOfRepo(repoName),
-                       sonarResultAnalysis.getMetricsOfRepo(repoName),
-                       projId,
-                       repoName)
+        # addSonarResult(sonarResultAnalysis.getIssueNumberOfRepo(repoName),
+        #                sonarResultAnalysis.getMetricsOfRepo(repoName),
+        #                projId,
+        #                repoName)
 
 if __name__ == "__main__":
     start()
