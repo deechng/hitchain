@@ -106,6 +106,14 @@ def _gini(array):
 	n = array.shape[0]#number of array elements
 	return ((np.sum((2 * index - n  - 1) * array)) / (n * np.sum(array))) #Gini coefficient
 
+def _nor_dict(dt):
+	keys = dt.keys()
+	values = [dt[key] for key in keys]
+	values = _nor_data(values)
+	for i in range(0,len(keys)):
+		dt[keys[i]] = values[i]
+	return dt
+
 # 专为 computeTrent函数服务
 def _socialfans_till_time(repo, dateTime):
 	fans_fb_before_1_window = dbop.select_one("select watches_num from facebook_data where coin_id=%s and created_time<=%s order by created_time desc limit 1",
@@ -437,6 +445,7 @@ def computeScore():
 
 	score = sorted(score, key=lambda x: x[1],reverse=True)
 
+	M1,M2,M3,M4,M5,M6 = _nor_dict(M1),_nor_dict(M2),_nor_dict(M3),_nor_dict(M4),_nor_dict(M5),_nor_dict(M6)
 	field_sql_str = "prj_id,rank,score,m1_inf,m2_maturity,m3_quality,m4_team_healty,m5_activatin,m6_trend"
 	for i in range(0,len(score)):
 		repo,r_score = score[i]
