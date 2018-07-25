@@ -19,7 +19,6 @@ def get_conn():
 	except Exception,e:
 		conn = MySQLdb.connect(config["db_host"],config["db_user"], 
 							config["db_passwd"],config["db_name"],charset='utf8mb4')
-		THREAD_POOL.put(conn)
 	return conn
 def put_conn(conn):
 	THREAD_POOL.put(conn)	
