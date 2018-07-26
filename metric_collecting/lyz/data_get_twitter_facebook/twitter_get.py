@@ -6,6 +6,8 @@ import xlrd
 import logging
 import datetime
 import time
+import sys
+sys.path.append("..")
 from email_monitor import emailer
 
 logging.basicConfig(level=logging.DEBUG,
