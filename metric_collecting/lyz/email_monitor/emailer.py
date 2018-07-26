@@ -7,10 +7,10 @@ from email.mime.text import MIMEText  # 引入smtplib和MIMEText
 def email(content):
     host = 'smtp.163.com'  # 设置发件服务器地址
     port = 465  # 设置发件服务器端口号。注意，这里有SSL和非SSL两种形式
-    sender = 'liyaozongheu1@163.com'  # 设置发件邮箱
-    # pwd=osseanrank0
-    pwd = 'osseanrank0'  # 设置发件邮箱的密码，等会登陆会用到
-    receiver = '2360539570@qq.com'  # 设置邮件接收人，填上自己的邮箱
+    sender = '@163.com'  # 设置发件邮箱
+    # pwd=
+    pwd = ''  # 设置发件邮箱的密码，等会登陆会用到
+    receiver = '@qq.com'  # 设置邮件接收人，填上自己的邮箱
     body = content  # 设置邮件正文，这里是支持HTML的
 
     msg = MIMEText(body, 'html')  # 设置正文为符合邮件格式的HTML内容

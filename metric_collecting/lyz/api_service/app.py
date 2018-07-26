@@ -8,30 +8,39 @@ import pymysql
 import datetime
 
 app = Flask(__name__)
-access_token = [
-    'eb8bce039a5cb01568f81f1661d350bb9fc5b57a',
-    '12b5e9bbb7c7718916891b6a1b3778f17d448127',
-    '01cd85928808dc484283cb4807c8d04625d8bb27'
-]
+access_token = ['']
 
 #数据库配置
-# dbname='lyz'
-# user='root'
-# passwd='111111'
-# host = '10.107.10.110'
+# dbname=''
+# user=''
+# passwd=''
+# host = ''
 #
-dbname='ossean_coin_rank'
-user='root'
-passwd='password'
-host = 'localhost'
+dbname=''
+user=''
+passwd=''
+host = ''
 
 conn =  pymysql.connect(host=host, port=3306, user=user, passwd=passwd, db=dbname,charset='utf8')
 conn.autocommit(1)
 cur=conn.cursor()
 
+def re_conn():
+    global conn
+    global cur
+    conn = pymysql.connect(host=host, port=3306, user=user, passwd=passwd, db=dbname, charset='utf8')
+    conn.autocommit(1)
+    cur = conn.cursor()
+
+
 #**********获取所有结果、单个项目方法**********
 # 获取所有结果
 def get_all_ranking_result():
+    try:
+        conn.ping()
+    except:
+        print("*****************连接断开重新连接")
+        re_conn()
 
     select_sql_1 = "select prj_id, name, github_url, facebook_url, twitter_url from prj_list"
     select_sql_2 = "select score, rank, rank_date, m1_inf, m2_maturity, m3_quality, m4_team_healty, m5_activatin, m6_trend" \
@@ -50,9 +59,9 @@ def get_all_ranking_result():
         each_prj_ranking_result['repo_url'] = coin[2]
         each_prj_ranking_result['facebook_url'] = coin[3]
         each_prj_ranking_result['twitter_url'] = coin[4]
-        print(select_sql_2 % (coin[0]))
+        # print(select_sql_2 % (coin[0]))
         cur.execute(select_sql_2 % (coin[0]))
-        print(select_sql_2 % (coin[0]))
+        # print(select_sql_2 % (coin[0]))
         result = cur.fetchall()
         if result.__len__() == 0:
             print("未找到对应的结果",coin[0],coin[1])
@@ -63,12 +72,12 @@ def get_all_ranking_result():
         each_prj_ranking_result['score'] = daiay_rank_result[0]
         each_prj_ranking_result['rank'] = daiay_rank_result[1]
         each_prj_ranking_result['rank_date'] = daiay_rank_result[2].strftime("%Y-%m-%d")
-        print(type(daiay_rank_result[2]))
+        # print(type(daiay_rank_result[2]))
         each_prj_ranking_result['m1_inf'] = daiay_rank_result[3]
         each_prj_ranking_result['m2_maturity'] = daiay_rank_result[4]
         each_prj_ranking_result['m3_quality'] = daiay_rank_result[5]
-        each_prj_ranking_result['m4_team_healty'] = daiay_rank_result[6]
-        each_prj_ranking_result['m5_activatin'] = daiay_rank_result[7]
+        each_prj_ranking_result['m4_team_healthy'] = daiay_rank_result[6]
+        each_prj_ranking_result['m5_activeness'] = daiay_rank_result[7]
         each_prj_ranking_result['m6_trend'] = daiay_rank_result[8]
 
         all_ranking_result.append(each_prj_ranking_result)
@@ -78,14 +87,19 @@ def get_all_ranking_result():
 
 #获取单个项目
 def get_prj_ranking_result(prj_id, start_time, end_time):
+    try:
+        conn.ping()
+    except:
+        re_conn()
+
     select_sql_1 = "select prj_id, name, github_url, facebook_url, twitter_url from prj_list where prj_id = '%s'"
     select_sql_2 = "select score, rank, rank_date, m1_inf, m2_maturity, m3_quality, m4_team_healty, m5_activatin, m6_trend" \
-                   " from daily_rank where prj_id = '%s' and rank_date > '%s' and rank_date < '%s'"
+                   " from daily_rank where prj_id = '%s' and rank_date > '%s' and rank_date < '%s' order by rank_date desc limit 1"
     print("nihao")
     print(select_sql_1 % prj_id)
 
     cur.execute(select_sql_1 % prj_id)
-    print(select_sql_1 % prj_id)
+    # print(select_sql_1 % prj_id)
     print("wobuhao")
     coin = cur.fetchall()[0]
 
@@ -109,12 +123,12 @@ def get_prj_ranking_result(prj_id, start_time, end_time):
     each_prj_ranking_result['score'] = daiay_rank_result[0]
     each_prj_ranking_result['rank'] = daiay_rank_result[1]
     each_prj_ranking_result['rank_date'] = daiay_rank_result[2].strftime("%Y-%m-%d")
-    print(type(daiay_rank_result[2]))
+    # print(type(daiay_rank_result[2]))
     each_prj_ranking_result['m1_inf'] = daiay_rank_result[3]
     each_prj_ranking_result['m2_maturity'] = daiay_rank_result[4]
     each_prj_ranking_result['m3_quality'] = daiay_rank_result[5]
-    each_prj_ranking_result['m4_team_healty'] = daiay_rank_result[6]
-    each_prj_ranking_result['m5_activatin'] = daiay_rank_result[7]
+    each_prj_ranking_result['m4_team_healthy'] = daiay_rank_result[6]
+    each_prj_ranking_result['m5_activeness'] = daiay_rank_result[7]
     each_prj_ranking_result['m6_trend'] = daiay_rank_result[8]
 
     prj_ranking_result.append(each_prj_ranking_result)
@@ -164,6 +178,11 @@ def get_prj_ranking():
 @app.route('/coin/api/id', methods=['get'])
 def get_id():
     try:
+        conn.ping()
+    except:
+        re_conn()
+
+    try:
         select_sql = "select prj_id, name, github_url, facebook_url, twitter_url from prj_list where name = '%s'"
         coin_list = []
         coin_name = request.args['name']
@@ -197,5 +216,5 @@ def not_found(error):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80,debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
 

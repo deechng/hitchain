@@ -21,15 +21,15 @@ formatter = logging.Formatter('%(name)-12s: %(levelname)-8s %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 
-# dbname='lyz'
-# user='root'
-# passwd='111111'
-# host = '10.107.10.110'
+# dbname=''
+# user=''
+# passwd=''
+# host = ''
 
-dbname='ossean_coin_rank'
-user='root'
-passwd='password'
-host = 'localhost'
+dbname=''
+user=''
+passwd=''
+host = ''
 
 conn =  pymysql.connect(host=host, port=3306, user=user, passwd=passwd, db=dbname,charset='utf8')
 conn.autocommit(1)

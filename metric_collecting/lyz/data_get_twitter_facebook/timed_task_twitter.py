@@ -8,5 +8,5 @@ def job():
     print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 # BlockingScheduler
 scheduler = BlockingScheduler()
-scheduler.add_job(job, 'cron', day_of_week='0-6', hour=15, minute=10)
+scheduler.add_job(job, 'cron', day_of_week='0-6', hour=1, minute=10)
 scheduler.start()
