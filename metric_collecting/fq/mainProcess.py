@@ -103,7 +103,7 @@ def scannerOneRepoC(repoName):
 
     sonarScan.runSonarScannerC(targetPath)
 
-    shutil.rmtree(targetPath)
+    # shutil.rmtree(targetPath)
 
 def scannerRepoList(repoNameList):
     sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
