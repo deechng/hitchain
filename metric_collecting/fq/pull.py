@@ -23,7 +23,7 @@ def gitPull(repoPullDir):
 
 def getCloneRepos():
     with conn.cursor() as cur:
-        sql = "select proj_name,repo_name,git_addr,proj_id from git_clone_pull_status where is_clone = 1"
+        sql = "select proj_name,repo_name,git_addr,proj_id,ps from git_clone_pull_status where is_clone = 1"
         cur.execute(sql)
         return cur.fetchall()
 
@@ -35,6 +35,6 @@ def updateCloneStatus(proName,repoName):
 
 def PullProcess():
     for repo in getCloneRepos():
-        proName,repoName,gitAddr,projId = repo
+        proName,repoName,gitAddr,projId,ps = repo
         gitPull(cf.get("server","gitCloneAddr")+"/"+repoName)
         updateCloneStatus(proName,repoName)

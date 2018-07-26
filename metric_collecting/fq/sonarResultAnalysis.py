@@ -31,7 +31,9 @@ def getMetric(repoName,metricKeys):
 
 def getMetricsOfRepo(repoName):
     loc = getMetric(repoName,"ncloc")
-    return {"loc":loc}
+    duplication = getMetric(repoName,"duplicated_lines_density")
+    return {"loc":loc,"duplication":duplication}
+
 
 
 def getIssueResult(repoName,type):

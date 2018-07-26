@@ -48,10 +48,12 @@ def addSonarResult(issueNum,metrics,projId,repoName):
         issue_minor = filter(issueNum["minor"])
         issue_info = filter(issueNum["info"])
         loc = filter(metrics["loc"])
+        duplication = filter(metrics["duplication"])*1.0/100
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sql = "insert into sonar_repo_issues_num (`proj_id`,`issue_major`,`issue_blocker`,`issue_critical`," \
-              "`issue_minor`,`issue_info`, `repo_name`, `create_time`, `loc`) values (%s,%s,%s,%s,%s,%s,'%s','%s',%s)" \
-              % (projId,issue_major,issue_blocker,issue_critical,issue_minor,issue_info,repoName,dt,loc)
+              "`issue_minor`,`issue_info`, `repo_name`, `create_time`, `loc`, `duplication`) values " \
+              "(%s,%s,%s,%s,%s,%s,'%s','%s',%s, %s)" \
+              % (projId,issue_major,issue_blocker,issue_critical,issue_minor,issue_info,repoName,dt,loc,duplication)
         print sql
         cur.execute(sql)
         conn.commit()
@@ -61,13 +63,16 @@ def start():
     sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
     targetPathBase = os.getcwd() + "/" + cf.get("server", "sonarTempAddr")
     for repo in pull.getCloneRepos():
-        proName, repoName, gitAddr, projId = repo
+        proName, repoName, gitAddr, projId, ps = repo
         sourcePath = sourcePathBase + "/" + repoName
         targetPath = targetPathBase + "/" + repoName
         helper.mkdir(targetPath)
         helper.copyFiles(sourcePath, targetPath)
 
-        sonarScan.runSonarScanner(targetPath)
+        if ps == "C":
+            sonarScan.runSonarScannerC(targetPath)
+        else:
+            sonarScan.runSonarScanner(targetPath)
 
         shutil.rmtree(targetPath)
 
@@ -85,6 +90,18 @@ def scannerOneRepo(repoName):
     helper.copyFiles(sourcePath, targetPath)
 
     sonarScan.runSonarScanner(targetPath)
+
+    shutil.rmtree(targetPath)
+
+def scannerOneRepoC(repoName):
+    sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
+    targetPathBase = os.getcwd() + "/" + cf.get("server", "sonarTempAddr")
+    sourcePath = sourcePathBase + "/" + repoName
+    targetPath = targetPathBase + "/" + repoName
+    helper.mkdir(targetPath)
+    helper.copyFiles(sourcePath, targetPath)
+
+    sonarScan.runSonarScannerC(targetPath)
 
     shutil.rmtree(targetPath)
 
