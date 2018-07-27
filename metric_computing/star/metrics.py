@@ -2,7 +2,7 @@
 # 计算排名指标
 
 import numpy as np
-from config import config
+from _config import config
 import time
 import dbop
 import logging
@@ -428,17 +428,17 @@ def computeScore():
 	M1,M2,M3,M4,M5,M6 = {},{},{},{},{},{}
 	dateTime = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(time.time()))
 	for repo in REPOS:
-		M1[repo] = _my_avg(dbop.select_one("select inf_dev,inf_social from inf where repo_id=%s and computed_at<=%s order by id limit 1",
+		M1[repo] = _my_avg(dbop.select_one("select inf_dev,inf_social from inf where repo_id=%s and computed_at<=%s order by id desc limit 1",
 						(repo,dateTime),(0,0)))
-		M2[repo] = _my_avg(dbop.select_one("select issue_done, commit_total, age_dev, fans_dev, fans_social from maturity where repo_id=%s and computed_at<=%s order by id limit 1",
+		M2[repo] = _my_avg(dbop.select_one("select issue_done, commit_total, age_dev, fans_dev, fans_social from maturity where repo_id=%s and computed_at<=%s order by id desc limit 1",
 						(repo,dateTime),(0,0)))
-		M3[repo] = _my_avg(dbop.select_one("select repair_ratio,repair_time from quality_sub where repo_id=%s and computed_at<=%s order by id limit 1",
+		M3[repo] = _my_avg(dbop.select_one("select repair_ratio,repair_time from quality_sub where repo_id=%s and computed_at<=%s order by id desc limit 1",
 						(repo,dateTime),(0,0)))
-		M4[repo] = _my_avg(dbop.select_one("select  ccr,ngr,tbr from team_health where repo_id=%s and computed_at<=%s order by id limit 1",
+		M4[repo] = _my_avg(dbop.select_one("select  ccr,ngr,tbr from team_health where repo_id=%s and computed_at<=%s order by id desc limit 1",
 						(repo,dateTime),(0,0)))
-		M5[repo] = _my_avg(dbop.select_one("select  dev from dev_actv where repo_id=%s and computed_at<=%s order by id limit 1",
+		M5[repo] = _my_avg(dbop.select_one("select  dev from dev_actv where repo_id=%s and computed_at<=%s order by id desc limit 1",
 						(repo,dateTime),(0,)))
-		M6[repo] = _my_avg(dbop.select_one("select  dit,tit,dcpt,ucpt from trend where repo_id=%s and computed_at<=%s order by id limit 1",
+		M6[repo] = _my_avg(dbop.select_one("select  dit,tit,dcpt,ucpt from trend where repo_id=%s and computed_at<=%s order by id desc limit 1",
 						(repo,dateTime),(0,0)))
 
 	M1,M2,M3,M4,M5,M6 = _nor_dict(M1),_nor_dict(M2),_nor_dict(M3),_nor_dict(M4),_nor_dict(M5),_nor_dict(M6)

@@ -1,7 +1,7 @@
 #coding:utf-8
 
 tokens = []
-with open("tokens.txt","r") as fp:
+with open("_tokens.txt","r") as fp:
 	for line in fp.readlines():
 		tokens.append(line.strip())
 

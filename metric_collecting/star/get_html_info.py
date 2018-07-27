@@ -6,7 +6,7 @@ for fetching raw infos from html
 import time
 import logging
 import urllib2
-from config import config
+from _config import config
 from lxml import etree
 import dbop
 

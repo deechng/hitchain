@@ -9,7 +9,7 @@ import json
 import logging
 import sys
 import dbop
-from config import config
+from _config import config
 import gh_token_pool_outtoken as gh_token_pool
 import Queue
 import threading

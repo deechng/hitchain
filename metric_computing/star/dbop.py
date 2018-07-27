@@ -1,6 +1,6 @@
 #coding:utf-8
 
-from config import config
+from _config import config
 import MySQLdb
 import Queue
 
