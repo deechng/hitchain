@@ -27,7 +27,7 @@ def gitClone(repoCloneDir,repo):
             r = "done"
         except:
             print ("clone repo:"+repoName+" failed")
-            shutil.rmtree(repoCloneDir+""/+repoName)
+            shutil.rmtree(repoCloneDir+"/"+repoName)
             time.sleep(5)
             continue
 
