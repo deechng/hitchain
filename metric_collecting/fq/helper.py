@@ -56,3 +56,21 @@ def configSonarProperty(repoName):
     fp.write(pro)
     fp.close()
     print('SUCCESS')
+
+def configSonarPropertyC(repoName):
+    import os
+    # sonar_longin = "sonar.login=%s" % sonar_token
+    properties = ["sonar.projectKey=","sonar.projectName=","sonar.projectVersion=1.0","sonar.sourceEncoding=UTF-8",
+                  "sonar.sources=.","sonar.java.binaries=.","sonar.cxx.cppcheck.reportPath=cppcheck-result-1.xml"]
+    # properties = ["sonar.projectKey=", "sonar.projectName=", "sonar.projectVersion=1.0", "sonar.sourceEncoding=UTF-8",
+    #               "sonar.sources=."]
+
+    properties[0] = properties[0] + repoName
+    properties[1] = properties[1] + repoName
+    sera = '\n'
+    pro = sera.join(properties)
+    path = cf.get("server","gitCloneAddr")+"/"+repoName
+    fp = open(path + '/sonar-project.properties','w')
+    fp.write(pro)
+    fp.close()
+    print('SUCCESS')

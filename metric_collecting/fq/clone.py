@@ -16,11 +16,14 @@ conn = pymysql.connect(host=cf.get("DB","host"),
                        charset='utf8')
 
 def gitClone(repoCloneDir,repo):
-    proName, repoName, gitAddr = repo
+    proName, repoName, gitAddr, ps = repo
     helper.mkdir(repoCloneDir)
     try:
         git.Git(repoCloneDir).clone(gitAddr)
-        helper.configSonarProperty(repoName)
+        if ps == "C":
+            helper.configSonarPropertyC(repoName)
+        else:
+            helper.configSonarProperty(repoName)
 
         updateCloneStatus(proName, repoName)
     except:
@@ -28,7 +31,7 @@ def gitClone(repoCloneDir,repo):
 
 def getCloneRepos():
     with conn.cursor() as cur:
-        sql = "select proj_name,repo_name,git_addr from git_clone_pull_status where is_clone = 0 and git_addr is not null"
+        sql = "select proj_name,repo_name,git_addr,ps from git_clone_pull_status where git_addr is not null"
         cur.execute(sql)
         return cur.fetchall()
 
@@ -46,4 +49,5 @@ def CloneProcess():
         gitClone(cf.get("server","gitCloneAddr"),repo)
 
 
-CloneProcess()
+if __name__ == "__main__":
+    CloneProcess()

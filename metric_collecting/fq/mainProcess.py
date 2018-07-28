@@ -9,6 +9,7 @@ import sonarScan
 import sonarResultAnalysis
 import datetime
 import shutil
+import clone
 
 
 # 代码clone
@@ -66,6 +67,7 @@ def addSonarResult(issueNum,metrics,projId,repoName):
 
 def start():
     # pull.PullProcess()
+    clone.CloneProcess()
     sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
     targetPathBase = os.getcwd() + "/" + cf.get("server", "sonarTempAddr")
     for repo in getCloneRepos():
@@ -87,6 +89,7 @@ def start():
                            sonarResultAnalysis.getMetricsOfRepo(repoName),
                            projId,
                            repoName)
+            shutil.rmtree(sourcePath)
         else:
             issueNum = {
                 "major": None,
