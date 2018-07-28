@@ -39,6 +39,12 @@ def filter(value):
     else:
         return value
 
+def getCloneRepos():
+    with conn.cursor() as cur:
+        sql = "select proj_name,repo_name,git_addr,proj_id,ps,is_clone from git_clone_pull_status"
+        cur.execute(sql)
+        return cur.fetchall()
+
 def addSonarResult(issueNum,metrics,projId,repoName):
     with conn.cursor() as cur:
 
@@ -59,27 +65,41 @@ def addSonarResult(issueNum,metrics,projId,repoName):
         conn.commit()
 
 def start():
-    # pull.PullProcess()
+    pull.PullProcess()
     sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
     targetPathBase = os.getcwd() + "/" + cf.get("server", "sonarTempAddr")
-    for repo in pull.getCloneRepos():
-        proName, repoName, gitAddr, projId, ps = repo
-        sourcePath = sourcePathBase + "/" + repoName
-        targetPath = targetPathBase + "/" + repoName
-        helper.mkdir(targetPath)
-        helper.copyFiles(sourcePath, targetPath)
+    for repo in getCloneRepos():
+        proName, repoName, gitAddr, projId, ps, isClone = repo
+        if isClone:
+            sourcePath = sourcePathBase + "/" + repoName
+            targetPath = targetPathBase + "/" + repoName
+            helper.mkdir(targetPath)
+            helper.copyFiles(sourcePath, targetPath)
 
-        if ps == "C":
-            sonarScan.runSonarScannerC(targetPath)
+            if ps == "C":
+                sonarScan.runSonarScannerC(targetPath)
+            else:
+                sonarScan.runSonarScanner(targetPath)
+
+            shutil.rmtree(targetPath)
+
+            addSonarResult(sonarResultAnalysis.getAllIssueNumberOfRepo(repoName),
+                           sonarResultAnalysis.getMetricsOfRepo(repoName),
+                           projId,
+                           repoName)
         else:
-            sonarScan.runSonarScanner(targetPath)
-
-        shutil.rmtree(targetPath)
-
-        addSonarResult(sonarResultAnalysis.getAllIssueNumberOfRepo(repoName),
-                       sonarResultAnalysis.getMetricsOfRepo(repoName),
-                       projId,
-                       repoName)
+            issueNum = {
+                "major": None,
+                "blocker": None,
+                "critical": None,
+                "minor": None,
+                "info": None
+            }
+            metrics = {
+                "loc": None,
+                "duplication": None
+            }
+            addSonarResult(issueNum,metrics,projId,repoName)
 
 def scannerOneRepo(repoName):
     sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
