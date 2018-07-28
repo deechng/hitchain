@@ -24,6 +24,7 @@ def gitClone(repoCloneDir,repo):
     r=""
     while r =="":
         try:
+            helper.mkdir(repoCloneDir+"/"+re.sub('\s','',proName))
             git.Git(repoCloneDir+"/"+re.sub('\s','',proName)).clone(gitAddr)
             r = "done"
         except:
