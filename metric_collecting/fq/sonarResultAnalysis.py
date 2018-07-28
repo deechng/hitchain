@@ -1,7 +1,11 @@
 import json
+
+import datetime
 import requests
 import ConfigParser
 import time
+import pymysql
+
 
 cf = ConfigParser.ConfigParser()
 cf.read("config.conf")
@@ -10,7 +14,12 @@ issue_url = root_url + "/issues/search?componentKeys="
 # issue_url_filter = "&severities=CRITICAL%2CMAJOR"
 issue_url_filter = "&resolved=false&severities="
 metrics_url = root_url + "/measures/component?"
-
+conn = pymysql.connect(host=cf.get("DB","host"),
+                       port=int(cf.get("DB","port")),
+                       user=cf.get("DB","user"),
+                       passwd=cf.get("DB","password"),
+                       db=cf.get("DB","database"),
+                       charset='utf8')
 
 
 def getMetric(repoName,metricKeys):
@@ -92,7 +101,56 @@ def getAllIssueNumberOfRepo(repoName):
         "info":getIssueNumberOfRepo(repoName,"INFO")
     }
 
+def addSonarResult(issueNum,metrics,projId,repoName):
+    with conn.cursor() as cur:
 
+        issue_major = filter(issueNum["major"])
+        issue_blocker = filter(issueNum["blocker"])
+        issue_critical = filter(issueNum["critical"])
+        issue_minor = filter(issueNum["minor"])
+        issue_info = filter(issueNum["info"])
+        loc = filter(metrics["loc"])
+        duplication = metrics["duplication"]
+        if duplication:
+            duplication = float(duplication)/100
+        duplication = filter(duplication)
+        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        sql = "insert into sonar_repo_issues_num (`proj_id`,`issue_major`,`issue_blocker`,`issue_critical`," \
+              "`issue_minor`,`issue_info`, `repo_name`, `create_time`, `loc`, `duplication`) values " \
+              "(%s,%s,%s,%s,%s,%s,'%s','%s',%s, %s)" \
+              % (projId,issue_major,issue_blocker,issue_critical,issue_minor,issue_info,repoName,dt,loc,duplication)
+        print sql
+        cur.execute(sql)
+        conn.commit()
+
+def getCloneRepos():
+    with conn.cursor() as cur:
+        sql = "select proj_name,repo_name,git_addr,proj_id,ps,is_clone from git_clone_pull_status"
+        cur.execute(sql)
+        return cur.fetchall()
+
+
+def start():
+    for repo in getCloneRepos():
+        proName, repoName, gitAddr, projId, ps, isClone = repo
+        if isClone:
+            addSonarResult(getAllIssueNumberOfRepo(repoName),
+                           getMetricsOfRepo(repoName),
+                           projId,
+                           repoName)
+        else:
+            issueNum = {
+                "major": None,
+                "blocker": None,
+                "critical": None,
+                "minor": None,
+                "info": None
+            }
+            metrics = {
+                "loc": None,
+                "duplication": None
+            }
+            addSonarResult(issueNum,metrics,projId,repoName)
         # print getIssueNumbers(getIssueResult("bitcoin"),"bitcoin")
 
 # print  getIssueNumberOfRepo("bitcoin","MAJOR")

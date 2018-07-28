@@ -47,27 +47,7 @@ def getCloneRepos():
         cur.execute(sql)
         return cur.fetchall()
 
-def addSonarResult(issueNum,metrics,projId,repoName):
-    with conn.cursor() as cur:
 
-        issue_major = filter(issueNum["major"])
-        issue_blocker = filter(issueNum["blocker"])
-        issue_critical = filter(issueNum["critical"])
-        issue_minor = filter(issueNum["minor"])
-        issue_info = filter(issueNum["info"])
-        loc = filter(metrics["loc"])
-        duplication = metrics["duplication"]
-        if duplication:
-            duplication = float(duplication)/100
-        duplication = filter(duplication)
-        dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        sql = "insert into sonar_repo_issues_num (`proj_id`,`issue_major`,`issue_blocker`,`issue_critical`," \
-              "`issue_minor`,`issue_info`, `repo_name`, `create_time`, `loc`, `duplication`) values " \
-              "(%s,%s,%s,%s,%s,%s,'%s','%s',%s, %s)" \
-              % (projId,issue_major,issue_blocker,issue_critical,issue_minor,issue_info,repoName,dt,loc,duplication)
-        print sql
-        cur.execute(sql)
-        conn.commit()
 
 def start():
     # pull.PullProcess()
@@ -86,31 +66,11 @@ def start():
                 sonarScan.runSonarScannerC(targetPath)
             else:
                 sonarScan.runSonarScanner(targetPath)
-
+            time.sleep(10)
             shutil.rmtree(targetPath)
             shutil.rmtree(sourcePath)
     time.sleep(60)
-    for repo in getCloneRepos():
-        proName, repoName, gitAddr, projId, ps, isClone = repo
-        if isClone:
-            addSonarResult(sonarResultAnalysis.getAllIssueNumberOfRepo(repoName),
-                           sonarResultAnalysis.getMetricsOfRepo(repoName),
-                           projId,
-                           repoName)
-
-        else:
-            issueNum = {
-                "major": None,
-                "blocker": None,
-                "critical": None,
-                "minor": None,
-                "info": None
-            }
-            metrics = {
-                "loc": None,
-                "duplication": None
-            }
-            addSonarResult(issueNum,metrics,projId,repoName)
+    sonarResultAnalysis.start()
 
 def scannerOneRepo(repoName):
     sourcePathBase = os.getcwd() + "/" + cf.get("server", "gitCloneAddr")
