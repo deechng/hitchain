@@ -47,13 +47,14 @@ def getCloneRepos():
 
 def updateCloneStatus(proName,repoName):
     with conn.cursor() as cur:
-        if repoName != "go-ethereum":
-            sql = "update git_clone_pull_status set is_clone = 1 where proj_name = '%s' and repo_name = '%s'" % \
-                  (proName,repoName)
-        else:
-            sql = "update git_clone_pull_status set is_clone = 0 where proj_name = '%s' and repo_name = '%s'" % \
-                  (proName, repoName)
-
+        # if repoName != "go-ethereum":
+        #     sql = "update git_clone_pull_status set is_clone = 1 where proj_name = '%s' and repo_name = '%s'" % \
+        #           (proName,repoName)
+        # else:
+        #     sql = "update git_clone_pull_status set is_clone = 0 where proj_name = '%s' and repo_name = '%s'" % \
+        #           (proName, repoName)
+        sql = "update git_clone_pull_status set is_clone = 1 where proj_name = '%s' and repo_name = '%s'" % \
+              (proName, repoName)
         cur.execute(sql)
         conn.commit()
 

@@ -10,6 +10,7 @@ import sonarResultAnalysis
 import datetime
 import shutil
 import clone
+import time
 
 
 # 代码clone
@@ -55,7 +56,10 @@ def addSonarResult(issueNum,metrics,projId,repoName):
         issue_minor = filter(issueNum["minor"])
         issue_info = filter(issueNum["info"])
         loc = filter(metrics["loc"])
-        duplication = float(filter(metrics["duplication"]))/100
+        duplication = metrics["duplication"]
+        if duplication:
+            duplication = float(duplication)/100
+        duplication = filter(duplication)
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sql = "insert into sonar_repo_issues_num (`proj_id`,`issue_major`,`issue_blocker`,`issue_critical`," \
               "`issue_minor`,`issue_info`, `repo_name`, `create_time`, `loc`, `duplication`) values " \
@@ -84,12 +88,16 @@ def start():
                 sonarScan.runSonarScanner(targetPath)
 
             shutil.rmtree(targetPath)
-
+            shutil.rmtree(sourcePath)
+    time.sleep(60)
+    for repo in getCloneRepos():
+        proName, repoName, gitAddr, projId, ps, isClone = repo
+        if isClone:
             addSonarResult(sonarResultAnalysis.getAllIssueNumberOfRepo(repoName),
                            sonarResultAnalysis.getMetricsOfRepo(repoName),
                            projId,
                            repoName)
-            shutil.rmtree(sourcePath)
+
         else:
             issueNum = {
                 "major": None,
