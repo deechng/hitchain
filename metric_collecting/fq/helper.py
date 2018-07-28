@@ -40,7 +40,7 @@ def copyFiles(sourceDir, targetDir):
             First_Directory = False
             copyFiles(sourceFile, targetFile)
 
-def configSonarProperty(repoName):
+def configSonarProperty(repoName,fileDir):
     import os
     # sonar_longin = "sonar.login=%s" % sonar_token
     properties = ["sonar.projectKey=","sonar.projectName=","sonar.projectVersion=1.0","sonar.sourceEncoding=UTF-8","sonar.sources=.","sonar.java.binaries=."]
@@ -51,13 +51,13 @@ def configSonarProperty(repoName):
     properties[1] = properties[1] + repoName
     sera = '\n'
     pro = sera.join(properties)
-    path = cf.get("server","gitCloneAddr")+"/"+repoName
+    path = fileDir+"/"+repoName
     fp = open(path + '/sonar-project.properties','w')
     fp.write(pro)
     fp.close()
     print('SUCCESS')
 
-def configSonarPropertyC(repoName):
+def configSonarPropertyC(repoName,fileDir):
     import os
     # sonar_longin = "sonar.login=%s" % sonar_token
     properties = ["sonar.projectKey=","sonar.projectName=","sonar.projectVersion=1.0","sonar.sourceEncoding=UTF-8",
@@ -69,7 +69,7 @@ def configSonarPropertyC(repoName):
     properties[1] = properties[1] + repoName
     sera = '\n'
     pro = sera.join(properties)
-    path = cf.get("server","gitCloneAddr")+"/"+repoName
+    path = fileDir+"/"+repoName
     fp = open(path + '/sonar-project.properties','w')
     fp.write(pro)
     fp.close()

@@ -20,7 +20,7 @@ conn = pymysql.connect(host=cf.get("DB","host"),
 
 def gitClone(repoCloneDir,repo):
     proName, repoName, gitAddr, ps = repo
-    helper.mkdir(repoCloneDir)
+    # helper.mkdir(repoCloneDir)
     r=""
     while r =="":
         try:
@@ -34,9 +34,9 @@ def gitClone(repoCloneDir,repo):
             continue
 
     if ps == "C":
-        helper.configSonarPropertyC(repoName)
+        helper.configSonarPropertyC(repoName,repoCloneDir+"/"+re.sub('\s','',proName))
     else:
-        helper.configSonarProperty(repoName)
+        helper.configSonarProperty(repoName,repoCloneDir+"/"+re.sub('\s','',proName))
 
     updateCloneStatus(proName, repoName)
 
