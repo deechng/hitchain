@@ -6,6 +6,7 @@ import pymysql
 import time
 import shutil
 import re
+import traceback
 
 
 cf = ConfigParser.ConfigParser()
@@ -30,6 +31,7 @@ def gitClone(repoCloneDir,repo):
         except:
             print ("clone repo:"+repoName+" failed")
             shutil.rmtree(repoCloneDir+"/"+repoName)
+            print traceback.format_exc()
             time.sleep(5)
             continue
 
