@@ -1,3 +1,6 @@
+## Research and Development
+Hi there, our project is now on the process of internal development. We change the status of the original repository to private.
+
 ## What is HitChain
 HitChain is a blockchain and IPFS technologies based ‘self-governed’ community of global developers, which is ‘By developers, Of developers, For developers’. HitChain strives to build a decentralized and collaborative community to trade developers’ works valued by a transparent credit system. It will be the first real community by developers, of developers, for developers. The designated digital currency system encourages developer to automatically redeem the real value with innovation and creativity, including the monetary return (currency value) and privileges (currency right). The shared-governance system will guarantee that each community member has the responsibility and right to participate in every decision making in the community.
 
