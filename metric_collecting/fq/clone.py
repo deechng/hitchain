@@ -30,8 +30,8 @@ def gitClone(repoCloneDir,repo):
             r = "done"
         except:
             print ("clone repo:"+repoName+" failed")
-            shutil.rmtree(repoCloneDir+"/"+repoName)
             print traceback.format_exc()
+            shutil.rmtree(repoCloneDir+"/"+re.sub('\s','',proName)+"/"+repoName)
             time.sleep(5)
             continue
 
@@ -68,6 +68,15 @@ def CloneProcess():
     for repo in getCloneRepos():
         # proName,repoName,gitAddr = repo
         gitClone(cf.get("server","gitCloneAddr"),repo)
+
+def cloneBackUp(inRepoName):
+    flag = 0
+    for repo in getCloneRepos():
+        proName, repoName, gitAddr, ps = repo
+        if repoName == inRepoName:
+            flag = 1
+        if flag:
+            gitClone(cf.get("server", "gitCloneAddr"), repo)
 
 
 if __name__ == "__main__":
