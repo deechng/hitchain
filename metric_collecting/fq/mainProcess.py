@@ -11,6 +11,7 @@ import datetime
 import shutil
 import clone
 import time
+import re
 
 
 # 代码clone
@@ -57,8 +58,8 @@ def start():
     for repo in getCloneRepos():
         proName, repoName, gitAddr, projId, ps, isClone = repo
         if isClone:
-            sourcePath = sourcePathBase + "/" + repoName
-            targetPath = targetPathBase + "/" + repoName
+            sourcePath = sourcePathBase + "/" + re.sub('\s','',proName) + "/" + repoName
+            targetPath = targetPathBase + "/" + re.sub('\s','',proName) + "/" + repoName
             helper.mkdir(targetPath)
             helper.copyFiles(sourcePath, targetPath)
 

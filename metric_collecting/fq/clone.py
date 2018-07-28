@@ -5,6 +5,7 @@ import helper
 import pymysql
 import time
 import shutil
+import re
 
 
 cf = ConfigParser.ConfigParser()
@@ -23,7 +24,7 @@ def gitClone(repoCloneDir,repo):
     r=""
     while r =="":
         try:
-            git.Git(repoCloneDir).clone(gitAddr)
+            git.Git(repoCloneDir+"/"+re.sub('\s','',proName)).clone(gitAddr)
             r = "done"
         except:
             print ("clone repo:"+repoName+" failed")
