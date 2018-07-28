@@ -3,6 +3,8 @@ import ConfigParser
 import git
 import helper
 import pymysql
+import time
+import shutil
 
 
 cf = ConfigParser.ConfigParser()
@@ -18,16 +20,24 @@ conn = pymysql.connect(host=cf.get("DB","host"),
 def gitClone(repoCloneDir,repo):
     proName, repoName, gitAddr, ps = repo
     helper.mkdir(repoCloneDir)
-    try:
-        git.Git(repoCloneDir).clone(gitAddr)
-        if ps == "C":
-            helper.configSonarPropertyC(repoName)
-        else:
-            helper.configSonarProperty(repoName)
+    r=""
+    while r =="":
+        try:
+            git.Git(repoCloneDir).clone(gitAddr)
+            r = "done"
+        except:
+            print ("clone repo:"+repo+" failed")
+            shutil.rmtree(repoCloneDir+""/+repoName)
+            time.sleep(5)
+            continue
 
-        updateCloneStatus(proName, repoName)
-    except:
-        print ("repo has been cloned!!!")
+    if ps == "C":
+        helper.configSonarPropertyC(repoName)
+    else:
+        helper.configSonarProperty(repoName)
+
+    updateCloneStatus(proName, repoName)
+
 
 def getCloneRepos():
     with conn.cursor() as cur:
@@ -37,7 +47,13 @@ def getCloneRepos():
 
 def updateCloneStatus(proName,repoName):
     with conn.cursor() as cur:
-        sql = "update git_clone_pull_status set is_clone = 1 where proj_name = '%s' and repo_name = '%s'" % (proName,repoName)
+        if repoName != "go-ethereum":
+            sql = "update git_clone_pull_status set is_clone = 1 where proj_name = '%s' and repo_name = '%s'" % \
+                  (proName,repoName)
+        else:
+            sql = "update git_clone_pull_status set is_clone = 0 where proj_name = '%s' and repo_name = '%s'" % \
+                  (proName, repoName)
+
         cur.execute(sql)
         conn.commit()
 

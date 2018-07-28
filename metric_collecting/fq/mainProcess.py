@@ -55,7 +55,7 @@ def addSonarResult(issueNum,metrics,projId,repoName):
         issue_minor = filter(issueNum["minor"])
         issue_info = filter(issueNum["info"])
         loc = filter(metrics["loc"])
-        duplication = filter(float(metrics["duplication"]))/100
+        duplication = float(filter(metrics["duplication"]))/100
         dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         sql = "insert into sonar_repo_issues_num (`proj_id`,`issue_major`,`issue_blocker`,`issue_critical`," \
               "`issue_minor`,`issue_info`, `repo_name`, `create_time`, `loc`, `duplication`) values " \
