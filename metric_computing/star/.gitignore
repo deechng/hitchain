@@ -1,6 +1,0 @@
-*.pyc
-test.py
-*.json
-_config.py
-log/*
-!log/.placeholder
