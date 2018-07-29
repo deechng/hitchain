@@ -21,6 +21,14 @@ conn = pymysql.connect(host=cf.get("DB","host"),
                        db=cf.get("DB","database"),
                        charset='utf8')
 
+def filter(value):
+    if value == 0:
+        return value
+    elif not value:
+        return "null"
+    else:
+        return value
+
 
 def getMetric(repoName,metricKeys):
     params = {"component":repoName,"metricKeys":metricKeys}

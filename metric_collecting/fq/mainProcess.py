@@ -34,13 +34,7 @@ conn = pymysql.connect(host=cf.get("DB","host"),
 
 # 拉代码
 # clone.CloneProcess()
-def filter(value):
-    if value == 0:
-        return value
-    elif not value:
-        return "null"
-    else:
-        return value
+
 
 def getCloneRepos():
     with conn.cursor() as cur:
